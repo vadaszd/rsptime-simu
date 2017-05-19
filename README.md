@@ -1,2 +1,2 @@
 # rsptime-simu
-**Some TEX expressions are not properly rendered on the `github` IPython notebook viewer! If you are interested in the formulas, please download the notebooks and open them in Jupyter.**
+The workbooks in this repository are aimed at modelling the response times in a distributed computer system.
