@@ -51,6 +51,10 @@ class FSBGraph(object):
         self.edges = list()
         self.node_count = count(0)
         
+    @property
+    def num_children(self):
+        return len(self.edges)
+        
     def next_node_id(self):
         return "B{}".format(next(self.node_count))
         
@@ -100,7 +104,6 @@ class FSBSampler(object):
         print ("Generating {} training, {} validation and {} test samples "
                "using the following concurrency structure:" \
                .format(training_set_size, validation_set_size, test_set_size))
-        print graph
         self.train_X_samples     , self.train_RT_samples      = self.sample(training_set_size  ,) 
         self.validation_X_samples, self.validation_RT_samples = self.sample(validation_set_size,)  
         self.test_X_samples      , self.test_RT_samples       = self.sample(test_set_size      ,)
