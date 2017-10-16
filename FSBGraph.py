@@ -101,8 +101,7 @@ class FSBSampler(object):
     def __init__(self, graph, num_children, training_set_size=0, validation_set_size=0, test_set_size=0):
         self.graph = graph
         self.num_children = num_children
-        print ("Generating {} training, {} validation and {} test samples "
-               "using the following concurrency structure:" \
+        print ("Generating {} training, {} validation and {} test samples"
                .format(training_set_size, validation_set_size, test_set_size))
         self.train_X_samples     , self.train_RT_samples      = self.sample(training_set_size  ,) 
         self.validation_X_samples, self.validation_RT_samples = self.sample(validation_set_size,)  
