@@ -22,12 +22,17 @@ class Barrier(object):
 class TrxBp(object):
     """ A transaction blue-print
     """
-    def __init__(self, name, fr, to, loc=0., scale=1., alpha=-1.0, beta=.10):
+    def __init__(self, name, fr, to, loc=0., scale=1., alpha=-1.0, beta=.10, sampleFromDistribution=None):
         fr.out_edges.append(self)
         to.in_edges.append(self)
         self.fr, self.to = fr, to
         self.name, self.loc, self.scale, self.alpha, self.beta = \
              name,      loc,      scale,      alpha,      beta
+
+        if sampleFromDistribution is None:
+            self.sampleFromDistribution = lambda loc, scale: np.exp(np.random.normal(loc, scale))
+        else:
+            self.sampleFromDistribution = sampleFromDistribution 
         
     def __str__(self):
         if self.loc != 0 or self.scale != 1.:
@@ -38,15 +43,16 @@ class TrxBp(object):
     __repr__ = __str__
         
     def collect_events(self, events, X, refTime=0):
-        start  = refTime + np.exp(np.random.normal(self.loc + self.alpha, self.scale * self.beta))
-        finish = start   + np.exp(np.random.normal(self.loc             , self.scale            ))
+        start  = refTime + self.sampleFromDistribution(self.loc + self.alpha, self.scale * self.beta)
+        finish = start   + self.sampleFromDistribution(self.loc             , self.scale            )
         events.extend([(start, "{" + self.name), (finish, self.name + "}")])
         X.append(finish - start)
         return finish
-    
+
 class FSBGraph(object):
     
-    def __init__(self):
+    def __init__(self, sampleFromDistribution=None):
+        self.sampleFromDistribution = sampleFromDistribution
         self.nodes = Barrier.BarrierDict()
         self.edges = list()
         self.node_count = count(0)
@@ -61,7 +67,7 @@ class FSBGraph(object):
     def add_edge(self, from_id, to_id, loc=0., scale=1., alpha=-1.0, beta=.10):
         name = "{}-->{}".format(from_id, to_id)
         self.edges.append(TrxBp(name, self.nodes[from_id], self.nodes[to_id], 
-                                loc, scale, alpha, beta)
+                                loc, scale, alpha, beta, self.sampleFromDistribution)
                          )
         
     def walk_in_topological_order(self, start_node_id, edge_func, node_func):
